@@ -30,7 +30,7 @@ public abstract class DynamicObject extends GameObject {
         }
     }
 
-    private Boolean isAllowedSurface(int x, int y) {
+    protected Boolean isAllowedSurface(int x, int y) {
         return GameMaster.getInstance().getMap().getMap()[y][x] != Configuration.WALL_CHARACTER;
     }
 
