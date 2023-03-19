@@ -9,8 +9,8 @@ import future.code.dark.dungeon.domen.GameObject;
 import future.code.dark.dungeon.domen.Map;
 import future.code.dark.dungeon.domen.Player;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +65,22 @@ public class GameMaster {
         return gameObjects;
     }
 
+
     public void renderFrame(Graphics graphics) {
         getMap().render(graphics);
-        getStaticObjects().forEach(gameObject -> gameObject.render(graphics));
+        getCoinObj().forEach(gameObject -> gameObject.render(graphics));
         getEnemies().forEach(gameObject -> gameObject.render(graphics));
+        getExitObj().forEach(gameObject -> gameObject.render(graphics));
         getPlayer().render(graphics);
         graphics.setColor(Color.WHITE);
         graphics.drawString(getPlayer().toString(), 10, 20);
+        if (getPlayer().getState() > 0) {
+            Image image = new ImageIcon("src/main/resources/assets/victory.jpg").getImage();
+            graphics.drawImage(image, 9, 5, null);
+        } else if (getPlayer().getState() < 0) {
+            Image image = new ImageIcon("src/main/resources/assets/game_over_screen.jpg").getImage();
+            graphics.drawImage(image, 9, 5, null);
+        }
     }
 
     public Player getPlayer() {
@@ -80,13 +89,17 @@ public class GameMaster {
                 .findFirst()
                 .orElseThrow();
     }
-
-    private List<GameObject> getStaticObjects() {
+    public List<GameObject> getCoinObj() {
         return gameObjects.stream()
-                .filter(gameObject -> !(gameObject instanceof DynamicObject))
+                .filter(gameObject -> gameObject instanceof Coin)
+                .filter(gameObject -> !((Coin) gameObject).getCoinCol())
                 .collect(Collectors.toList());
     }
-
+    private List<GameObject> getExitObj() {
+        return gameObjects.stream()
+                .filter(gameObject -> (gameObject instanceof Exit))
+                .collect(Collectors.toList());
+    }
     private List<Enemy> getEnemies() {
         return gameObjects.stream()
                 .filter(gameObject -> gameObject instanceof Enemy)
